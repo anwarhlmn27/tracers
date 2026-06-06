@@ -11,6 +11,13 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            if (in_array(Auth::user()->role, ['admin', 'dosen'])) {
+                return redirect('/dashboard');
+            } else {
+                return redirect('/form');
+            }
+        }
         return view('auth.login');
     }
 
@@ -37,7 +44,11 @@ class AuthController extends Controller
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard');
+            if (in_array(Auth::user()->role, ['admin', 'dosen'])) {
+                return redirect()->intended('/dashboard');
+            } else {
+                return redirect()->intended('/form');
+            }
         }
 
         RateLimiter::hit($throttleKey, 3 * 60);

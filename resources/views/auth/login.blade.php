@@ -21,7 +21,7 @@
     <div class="w-full max-w-6xl h-[80vh] min-h-[600px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex relative border-4 border-[#800000]/10">
         
         <!-- Left Side: Login Form -->
-        <div class="w-full lg:w-1/2 h-full flex flex-col justify-center p-12 lg:p-16 bg-white">
+        <div class="w-full lg:w-1/2 h-full flex flex-col justify-center p-6 sm:p-12 lg:p-16 bg-white">
             
             <!-- Form Content -->
             <div class="max-w-md w-full mx-auto">

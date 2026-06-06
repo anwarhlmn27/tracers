@@ -2,13 +2,81 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TracerResponseController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AlumniController;
+use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\MasterFormController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Dashboard: admin & dosen
+    Route::middleware('role:admin,dosen')->group(function () {
+        Route::get('/dashboard', function () {
+            $totalAlumni = \App\Models\Student::count();
+            
+            $alumniResponseCount = \App\Models\FormResponse::whereHas('form', function($q) {
+                $q->where('target_role', 'alumni');
+            })->distinct('user_id')->count('user_id');
+            
+            $responseRate = $totalAlumni > 0 ? round(($alumniResponseCount / $totalAlumni) * 100, 1) : 0;
+            
+            $recentResponses = \App\Models\FormResponse::with(['user.student.prodi', 'form'])
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+                
+            $totalForms = \App\Models\QuestionnaireForm::count();
+            $activeForms = \App\Models\QuestionnaireForm::where('is_active', true)->count();
+
+            return view('dashboard', compact('totalAlumni', 'responseRate', 'recentResponses', 'totalForms', 'activeForms'));
+        })->name('dashboard');
+    });
+
+    // Form: alumni (student), atasan
+    Route::middleware('role:alumni,atasan')->group(function () {
+        Route::get('/form', [TracerResponseController::class, 'create'])->name('form.create');
+        Route::post('/form', [TracerResponseController::class, 'store'])->name('form.store');
+    });
+
+    // Profile (all authenticated users)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Admin & Dosen only routes
+    Route::middleware('role:admin,dosen')->group(function () {
+        // Alumni Data CRUD
+        Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
+        Route::post('/alumni', [AlumniController::class, 'store'])->name('alumni.store');
+        Route::put('/alumni/{id}', [AlumniController::class, 'update'])->name('alumni.update');
+        Route::delete('/alumni/{id}', [AlumniController::class, 'destroy'])->name('alumni.destroy');
+
+        // Questionnaires
+        Route::get('/questionnaires', [QuestionnaireController::class, 'index'])->name('questionnaires.index');
+        Route::get('/questionnaires/export', [QuestionnaireController::class, 'export'])->name('questionnaires.export');
+
+        // Reports & Analytics
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+        // Settings
+        Route::get('/settings', function () {
+            return view('settings');
+        })->name('settings');
+    });
+
+    // Admin only routes
+    Route::middleware('role:admin')->group(function () {
+        // Master Form
+        Route::get('/master-form', [MasterFormController::class, 'index'])->name('master-form.index');
+        Route::get('/master-form/create', [MasterFormController::class, 'create'])->name('master-form.create');
+        Route::post('/master-form', [MasterFormController::class, 'store'])->name('master-form.store');
+        Route::get('/master-form/{id}/edit', [MasterFormController::class, 'edit'])->name('master-form.edit');
+        Route::put('/master-form/{id}', [MasterFormController::class, 'update'])->name('master-form.update');
+        Route::delete('/master-form/{id}', [MasterFormController::class, 'destroy'])->name('master-form.destroy');
+        Route::patch('/master-form/{id}/toggle', [MasterFormController::class, 'toggleActive'])->name('master-form.toggle');
+    });
 });
