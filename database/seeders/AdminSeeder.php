@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
        User::create([
-    'id'    => Str::uuid(), // Tambahkan ini
+    'id'    => Str::uuid(),
     'name'  => 'Administrator',
     'email' => 'admin@tracer.ac.id',
     'password' => Hash::make('password123'),
