@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initTS(el) {
         if (el.tomselect || el.classList.contains('ts-hidden-accessible') || el.classList.contains('no-ts')) return;
         if (el.closest('.dataTables_length')) return;
+        if (el.closest('.ql-toolbar')) return;
 
         new TomSelect(el, {
             create: false,

@@ -44,6 +44,38 @@
         color: #800000 !important;
     }
 
+    .ql-snow .ql-picker-item.ql-selected, .ql-snow .ql-picker-item:hover {
+        color: #800000 !important;
+    }
+    
+    .ql-snow .ql-picker-item.ql-selected, .ql-snow .ql-picker-item:hover {
+        color: #800000 !important;
+    }
+    
+    /* Tailwind Reset Fixes for Quill */
+    .ql-toolbar * {
+        box-sizing: content-box !important;
+    }
+    .ql-toolbar button {
+        background: transparent !important;
+        border: none !important;
+        padding: 3px 5px !important;
+    }
+    .ql-toolbar button svg, .ql-toolbar .ql-picker svg {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .ql-toolbar .ql-picker-label {
+        border: none !important;
+        padding: 0 8px !important;
+        display: inline-block !important;
+    }
+    .ql-toolbar .ql-picker-options {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
     /* TomSelect Customizations */
     .ts-control {
         border-radius: 0.5rem !important;
@@ -201,15 +233,22 @@
                     <label class="block text-sm font-bold text-gray-800 mb-2">Lampiran Dokumen</label>
                     <div class="flex flex-col gap-4">
                         <input type="file" name="attachments[]" id="attachment" class="hidden" multiple>
-                        <label for="attachment" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg class="w-8 h-8 mb-3 text-[#E6A442]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="mb-1 text-sm text-gray-600"><span class="font-bold text-[#800000]">Klik untuk unggah</span> atau seret file ke sini</p>
-                                <p class="text-xs text-gray-500">Bisa memilih lebih dari satu file (Maks 10MB/file)</p>
-                            </div>
-                        </label>
-                        <!-- File Cards Container -->
-                        <div id="file-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 empty:hidden"></div>
+                        
+                        <!-- Combined Dropzone Area -->
+                        <div class="border-2 border-gray-300 border-dashed rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-colors p-4 relative group">
+                            
+                            <!-- Label Area -->
+                            <label for="attachment" class="flex flex-col items-center justify-center w-full min-h-[100px] cursor-pointer">
+                                <div class="flex flex-col items-center justify-center">
+                                    <svg class="w-8 h-8 mb-3 text-[#E6A442] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <p class="mb-1 text-sm text-gray-600"><span class="font-bold text-[#800000]">Klik untuk unggah</span> atau seret file ke sini</p>
+                                    <p class="text-xs text-gray-500">Bisa memilih lebih dari satu file (Maks 10MB/file)</p>
+                                </div>
+                            </label>
+
+                            <!-- File Cards Container -->
+                            <div id="file-cards-container" class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-4 empty:hidden relative z-10 border-t border-gray-200/60 pt-4 border-dashed"></div>
+                        </div>
                     </div>
                 </div>
 
