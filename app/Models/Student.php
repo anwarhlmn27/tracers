@@ -19,6 +19,12 @@ class Student extends Model
         'nama_student',
         'angkatan',
         'status',
+        'status_alumni',
+        'nama_perusahaan',
+        'jabatan',
+        'tempat_kerja',
+        'response_rate',
+        'waktu_tunggu_kerja',
     ];
 
     public function user(): BelongsTo

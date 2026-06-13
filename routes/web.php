@@ -38,9 +38,10 @@ Route::middleware('auth')->group(function () {
     });
 
     // Form: alumni (student), atasan
-    Route::middleware('role:alumni,atasan')->group(function () {
+    Route::middleware(['role:alumni,atasan', 'incomplete_profile'])->group(function () {
         Route::get('/form', [TracerResponseController::class, 'create'])->name('form.create');
         Route::post('/form', [TracerResponseController::class, 'store'])->name('form.store');
+        Route::get('/form/search-alumni', [TracerResponseController::class, 'searchAlumni'])->name('form.search_alumni');
     });
 
     // Profile (all authenticated users)
@@ -55,12 +56,22 @@ Route::middleware('auth')->group(function () {
         Route::put('/alumni/{id}', [AlumniController::class, 'update'])->name('alumni.update');
         Route::delete('/alumni/{id}', [AlumniController::class, 'destroy'])->name('alumni.destroy');
 
+        // Master Prodi CRUD
+        Route::get('/prodi', [\App\Http\Controllers\ProdiController::class, 'index'])->name('prodi.index');
+        Route::post('/prodi', [\App\Http\Controllers\ProdiController::class, 'store'])->name('prodi.store');
+        Route::put('/prodi/{id}', [\App\Http\Controllers\ProdiController::class, 'update'])->name('prodi.update');
+        Route::delete('/prodi/{id}', [\App\Http\Controllers\ProdiController::class, 'destroy'])->name('prodi.destroy');
+
         // Questionnaires
         Route::get('/questionnaires', [QuestionnaireController::class, 'index'])->name('questionnaires.index');
         Route::get('/questionnaires/export', [QuestionnaireController::class, 'export'])->name('questionnaires.export');
 
         // Reports & Analytics
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+        // Email Blast
+        Route::get('/email', [\App\Http\Controllers\EmailBlastController::class, 'index'])->name('email.index');
+        Route::post('/email/send', [\App\Http\Controllers\EmailBlastController::class, 'send'])->name('email.send');
 
         // Settings
         Route::get('/settings', function () {

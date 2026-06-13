@@ -16,6 +16,8 @@ class QuestionnaireForm extends Model
     protected $fillable = [
         'title',
         'target_role',
+        'angkatan',
+        'form_group',
         'is_active',
     ];
 

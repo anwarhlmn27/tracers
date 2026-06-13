@@ -35,6 +35,12 @@ class AlumniController extends Controller
             'prodi_id' => ['required', 'exists:prodis,id'],
             'angkatan' => ['required', 'integer', 'min:2000', 'max:2099'],
             'status' => ['required', Rule::in(['aktif', 'lulus', 'cuti', 'drop_out'])],
+            'status_alumni' => ['nullable', 'string', Rule::in(['Bekerja (full time / part time)', 'Belum memungkinkan bekerja', 'Wiraswasta', 'Melanjutkan Pendidikan', 'Tidak kerja tetapi sedang mencari kerja'])],
+            'nama_perusahaan' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['nullable', 'string', 'max:255'],
+            'tempat_kerja' => ['nullable', 'string', Rule::in(['Lokal', 'Nasional', 'Multinasional'])],
+            'response_rate' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'waktu_tunggu_kerja' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([
@@ -53,6 +59,12 @@ class AlumniController extends Controller
             'nama_student' => $validated['nama_student'],
             'angkatan' => $validated['angkatan'],
             'status' => $validated['status'],
+            'status_alumni' => $validated['status_alumni'] ?? null,
+            'nama_perusahaan' => $validated['nama_perusahaan'] ?? null,
+            'jabatan' => $validated['jabatan'] ?? null,
+            'tempat_kerja' => $validated['tempat_kerja'] ?? null,
+            'response_rate' => $validated['response_rate'] ?? null,
+            'waktu_tunggu_kerja' => $validated['waktu_tunggu_kerja'] ?? null,
         ]);
 
         return back()->with('success', 'Data alumni berhasil ditambahkan!');
@@ -71,6 +83,12 @@ class AlumniController extends Controller
             'prodi_id' => ['required', 'exists:prodis,id'],
             'angkatan' => ['required', 'integer', 'min:2000', 'max:2099'],
             'status' => ['required', Rule::in(['aktif', 'lulus', 'cuti', 'drop_out'])],
+            'status_alumni' => ['nullable', 'string', Rule::in(['Bekerja (full time / part time)', 'Belum memungkinkan bekerja', 'Wiraswasta', 'Melanjutkan Pendidikan', 'Tidak kerja tetapi sedang mencari kerja'])],
+            'nama_perusahaan' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['nullable', 'string', 'max:255'],
+            'tempat_kerja' => ['nullable', 'string', Rule::in(['Lokal', 'Nasional', 'Multinasional'])],
+            'response_rate' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'waktu_tunggu_kerja' => ['nullable', 'string', 'max:255'],
         ]);
 
         $student->update([
@@ -79,6 +97,12 @@ class AlumniController extends Controller
             'prodi_id' => $validated['prodi_id'],
             'angkatan' => $validated['angkatan'],
             'status' => $validated['status'],
+            'status_alumni' => $validated['status_alumni'] ?? null,
+            'nama_perusahaan' => $validated['nama_perusahaan'] ?? null,
+            'jabatan' => $validated['jabatan'] ?? null,
+            'tempat_kerja' => $validated['tempat_kerja'] ?? null,
+            'response_rate' => $validated['response_rate'] ?? null,
+            'waktu_tunggu_kerja' => $validated['waktu_tunggu_kerja'] ?? null,
         ]);
 
         // Also update user name

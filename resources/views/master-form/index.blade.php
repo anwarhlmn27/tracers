@@ -41,6 +41,16 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <h5 class="font-semibold text-gray-900 truncate">{{ $form->title }}</h5>
+                                <div class="w-full mt-1 mb-1">
+                                    @if($form->angkatan)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-medium mr-1 border border-blue-100">Angkatan {{ $form->angkatan }}</span>
+                                    @else
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-gray-50 text-gray-600 text-[10px] font-medium mr-1 border border-gray-200">Semua Angkatan</span>
+                                    @endif
+                                    @if($form->form_group)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-medium border border-purple-100">{{ $form->form_group }}</span>
+                                    @endif
+                                </div>
                                 @if($form->is_active)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">AKTIF</span>
                                 @else
@@ -108,6 +118,16 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <h5 class="font-semibold text-gray-900 truncate">{{ $form->title }}</h5>
+                                <div class="w-full mt-1 mb-1">
+                                    @if($form->angkatan)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-medium mr-1 border border-blue-100">Angkatan {{ $form->angkatan }}</span>
+                                    @else
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-gray-50 text-gray-600 text-[10px] font-medium mr-1 border border-gray-200">Semua Angkatan</span>
+                                    @endif
+                                    @if($form->form_group)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-medium border border-purple-100">{{ $form->form_group }}</span>
+                                    @endif
+                                </div>
                                 @if($form->is_active)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">AKTIF</span>
                                 @else

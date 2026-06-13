@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Tracer Study</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
+    <link href="{{ asset('assets/css/inter.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom-forms.css') }}" rel="stylesheet" />
     
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        <script src="{{ asset('assets/js/tailwindcss-browser.js') }}"></script>
     @endif
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -55,7 +55,7 @@
 
                     <div class="flex items-center justify-between pt-2">
                         <div class="flex items-center">
-                            <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-[#800000] focus:ring-[#800000] border-gray-300 rounded cursor-pointer">
+                            <input id="remember" name="remember" type="checkbox">
                             <label for="remember" class="ml-2 block text-sm text-gray-700 font-semibold cursor-pointer">
                                 Remember me
                             </label>

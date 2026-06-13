@@ -20,12 +20,36 @@ class TracerResponseController extends Controller
         $user = $request->user();
         $role = $user->role;
 
-        // Get active form for this user's role
-        $activeForm = QuestionnaireForm::with(['questions.options'])
+        $student = $user->student;
+        $evaluatedStudentId = null;
+        $angkatan = null;
+
+        if ($role === 'atasan') {
+            $evaluatedStudentId = $request->query('student_id');
+            if (!$evaluatedStudentId) {
+                $needsToSelectStudent = true;
+                return view('form', compact('user', 'needsToSelectStudent'));
+            }
+            $studentToEvaluate = \App\Models\Student::findOrFail($evaluatedStudentId);
+            $angkatan = $studentToEvaluate->angkatan;
+        } else {
+            $angkatan = $student ? $student->angkatan : null;
+        }
+
+        // Get active form for this user's role and angkatan
+        $activeFormQuery = QuestionnaireForm::with(['questions.options'])
             ->where('target_role', $role)
-            ->where('is_active', true)
-            ->latest()
-            ->first();
+            ->where('is_active', true);
+
+        if ($angkatan) {
+            $activeFormQuery->where(function ($q) use ($angkatan) {
+                $q->whereNull('angkatan')
+                  ->orWhere('angkatan', '')
+                  ->orWhere('angkatan', $angkatan);
+            });
+        }
+
+        $activeForm = $activeFormQuery->latest()->first();
 
         // Get previous responses for this user
         $previousResponses = FormResponse::with(['form', 'answers.question'])
@@ -34,7 +58,6 @@ class TracerResponseController extends Controller
             ->get();
 
         // Legacy: also get old static responses if user is alumni with student record
-        $student = $user->student;
         $legacyResponses = collect();
         if ($student) {
             $legacyResponses = TracerResponse::where('student_id', $student->id)
@@ -45,12 +68,16 @@ class TracerResponseController extends Controller
         // Check if user has already filled the active form
         $hasFilledActiveForm = false;
         if ($activeForm) {
-            $hasFilledActiveForm = FormResponse::where('form_id', $activeForm->id)
-                ->where('user_id', $user->id)
-                ->exists();
+            $query = FormResponse::where('form_id', $activeForm->id)->where('user_id', $user->id);
+            if ($role === 'atasan') {
+                $query->where('evaluated_student_id', $evaluatedStudentId);
+            }
+            $hasFilledActiveForm = $query->exists();
         }
 
-        return view('form', compact('activeForm', 'hasFilledActiveForm', 'previousResponses', 'legacyResponses', 'student', 'user'));
+        $needsToSelectStudent = false;
+
+        return view('form', compact('activeForm', 'hasFilledActiveForm', 'previousResponses', 'legacyResponses', 'student', 'user', 'needsToSelectStudent', 'evaluatedStudentId'));
     }
 
     /**
@@ -68,9 +95,11 @@ class TracerResponseController extends Controller
         $form = QuestionnaireForm::with('questions')->findOrFail($validated['form_id']);
 
         // Check if already submitted
-        $alreadySubmitted = FormResponse::where('form_id', $form->id)
-            ->where('user_id', $user->id)
-            ->exists();
+        $query = FormResponse::where('form_id', $form->id)->where('user_id', $user->id);
+        if ($user->role === 'atasan') {
+            $query->where('evaluated_student_id', $request->input('evaluated_student_id'));
+        }
+        $alreadySubmitted = $query->exists();
 
         if ($alreadySubmitted) {
             return back()->withErrors(['form_id' => 'Anda sudah mengisi kuesioner ini sebelumnya.']);
@@ -87,10 +116,11 @@ class TracerResponseController extends Controller
         }
 
         // Create form response
-        $formResponse = FormResponse::create([
+        $response = FormResponse::create([
             'id' => Str::uuid(),
             'form_id' => $form->id,
             'user_id' => $user->id,
+            'evaluated_student_id' => $user->role === 'atasan' ? $request->input('evaluated_student_id') : null,
         ]);
 
         // Save answers
@@ -104,12 +134,42 @@ class TracerResponseController extends Controller
 
             FormResponseAnswer::create([
                 'id' => Str::uuid(),
-                'response_id' => $formResponse->id,
+                'response_id' => $response->id,
                 'question_id' => $question->id,
                 'answer_text' => $answerValue,
             ]);
         }
 
-        return back()->with('success', 'Kuesioner berhasil disimpan! Terima kasih atas partisipasi Anda.');
+        return redirect()->route('form.create')->with('success', 'Terima kasih telah berpartisipasi mengisi kuesioner ini!');
+    }
+
+    /**
+     * Search alumni for atasan form selection.
+     */
+    public function searchAlumni(Request $request)
+    {
+        $search = $request->query('q');
+        if (strlen($search) < 3) {
+            return response()->json(['results' => []]);
+        }
+
+        $students = \App\Models\Student::where('nama_student', 'like', "%{$search}%")
+            ->whereNotIn('id', function($q) {
+                $q->select('evaluated_student_id')
+                  ->from('form_responses')
+                  ->whereNotNull('evaluated_student_id');
+            })
+            ->select('id', 'nama_student', 'nim', 'angkatan')
+            ->take(20)
+            ->get();
+
+        $results = $students->map(function($student) {
+            return [
+                'id' => $student->id,
+                'text' => $student->nama_student . ' (' . $student->nim . ') - ' . ($student->angkatan ?? 'Tidak ada angkatan')
+            ];
+        });
+
+        return response()->json(['results' => $results]);
     }
 }

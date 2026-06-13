@@ -12,10 +12,23 @@
                 <p class="text-sm text-gray-500 mt-1">Semua respons tracer study dari mahasiswa</p>
             </div>
             
-            <a href="{{ route('questionnaires.export') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-5 py-2.5 text-white font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:shadow-xl hover:shadow-emerald-600/30 hover:-translate-y-0.5 w-full sm:w-auto">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Export to Excel
-            </a>
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <form method="GET" action="{{ route('questionnaires.index') }}" class="w-full sm:w-auto">
+                    <select name="angkatan" onchange="this.form.submit()" class="w-full sm:w-auto rounded-2xl border border-gray-200 text-sm py-2.5 px-4 focus:ring-[#800000] focus:border-[#800000] bg-white shadow-sm font-medium">
+                        <option value="">Semua Angkatan</option>
+                        @foreach($angkatanList as $angkatan)
+                            <option value="{{ $angkatan }}" {{ $selectedAngkatan == $angkatan ? 'selected' : '' }}>
+                                Angkatan {{ $angkatan }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+
+                <a href="{{ route('questionnaires.export', ['angkatan' => request('angkatan')]) }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-5 py-2.5 text-white font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:shadow-xl hover:shadow-emerald-600/30 hover:-translate-y-0.5 w-full sm:w-auto">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Export to Excel
+                </a>
+            </div>
         </div>
 
         <!-- Summary Cards -->
@@ -32,31 +45,51 @@
                 </div>
             </div>
             <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">{{ $alumniFilled }} <span class="text-sm font-medium text-gray-500">/ {{ $totalAlumni }}</span></p>
+                            <p class="text-xs text-gray-500">Alumni Mengisi</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-2xl font-bold text-gray-900">{{ $responses->pluck('user_id')->unique()->count() }}</p>
-                        <p class="text-xs text-gray-500">Responden Unik</p>
-                    </div>
+                    @php $alumniPercent = $totalAlumni > 0 ? round(($alumniFilled / $totalAlumni) * 100) : 0; @endphp
+                    <span class="text-sm font-bold text-emerald-600">{{ $alumniPercent }}%</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                    <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ $alumniPercent }}%"></div>
                 </div>
             </div>
             <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">{{ $atasanFilled }} <span class="text-sm font-medium text-gray-500">/ {{ $totalAtasan }}</span></p>
+                            <p class="text-xs text-gray-500">Atasan Mengisi</p>
+                        </div>
                     </div>
-                    <div>
-                        @php $totalJawaban = $responses->sum(function($r) { return $r->answers->count(); }); @endphp
-                        <p class="text-2xl font-bold text-gray-900">{{ number_format($totalJawaban) }}</p>
-                        <p class="text-xs text-gray-500">Total Jawaban Diberikan</p>
-                    </div>
+                    @php $atasanPercent = $totalAtasan > 0 ? round(($atasanFilled / $totalAtasan) * 100) : 0; @endphp
+                    <span class="text-sm font-bold text-indigo-600">{{ $atasanPercent }}%</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                    <div class="bg-indigo-500 h-1.5 rounded-full" style="width: {{ $atasanPercent }}%"></div>
                 </div>
             </div>
         </div>
 
-        <div class="overflow-x-auto" x-data="{ showModal: false, selectedAnswers: [], selectedName: '', selectedForm: '' }">
+        <div class="overflow-x-auto" 
+             x-data="{ showModal: false, selectedAnswers: [], selectedName: '', selectedForm: '' }"
+             @open-modal.window="
+                selectedAnswers = $event.detail.answers;
+                selectedName = $event.detail.name;
+                selectedForm = $event.detail.form;
+                showModal = true;
+             ">
             <table id="questionnaireTable" class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
@@ -77,12 +110,12 @@
                         if ($roleTarget === 'alumni' && $response->user->student) {
                             $namaResponden = $response->user->student->nama_student;
                         }
-                        $answersJson = \Illuminate\Support\Js::from($response->answers->map(function($a) {
+                        $answersArray = $response->answers->map(function($a) {
                             return [
                                 'question' => $a->question->question_text ?? 'Pertanyaan Dihapus',
                                 'answer' => $a->answer_text ?? '-'
                             ];
-                        }));
+                        })->values()->toArray();
                     @endphp
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-4 sm:px-6 py-4 text-gray-900 font-medium">{{ $index + 1 }}</td>
@@ -115,7 +148,12 @@
                             </span>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <button type="button" @click="selectedAnswers = {{ $answersJson }}; selectedName = '{{ addslashes($namaResponden) }}'; selectedForm = '{{ addslashes($response->form->title ?? '-') }}'; showModal = true" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-xs font-bold">
+                            <button type="button" 
+                                data-answers="{{ json_encode($answersArray) }}"
+                                data-name="{{ $namaResponden }}"
+                                data-form="{{ $response->form->title ?? '-' }}"
+                                onclick="window.dispatchEvent(new CustomEvent('open-modal', { detail: { answers: JSON.parse(this.dataset.answers), name: this.dataset.name, form: this.dataset.form } }))" 
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-xs font-bold">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                 Detail
                             </button>
@@ -174,7 +212,7 @@
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}">
 <style>
     .dataTables_wrapper { padding: 1rem; }
     .dataTables_wrapper .dataTables_length select,
@@ -193,8 +231,8 @@
 @endpush
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {
@@ -203,7 +241,7 @@
                 responsive: true,
                 order: [[1, 'desc']],
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+                    url: '{{ asset('js/datatables-id.json') }}',
                 }
             });
         }

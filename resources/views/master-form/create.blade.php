@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto" x-data="formBuilder()">
-    <form action="{{ route('master-form.store') }}" method="POST" @submit="prepareSubmit">
+    <form action="{{ route('master-form.store') }}" method="POST" @submit="prepareSubmit" onkeydown="return event.key != 'Enter';">
         @csrf
 
         <!-- Form Info -->
@@ -20,10 +20,29 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Target Role <span class="text-red-500">*</span></label>
-                    <select name="target_role" x-model="targetRole" required
-                        class="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:ring-[#800000] focus:border-[#800000] text-sm">
-                        <option value="alumni">Alumni (Student)</option>
-                        <option value="atasan">Atasan</option>
+                    <select name="target_role" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:ring-[#800000] focus:border-[#800000] text-sm">
+                        <option value="alumni" {{ old('target_role') == 'alumni' ? 'selected' : '' }}>Alumni (Student)</option>
+                        <option value="atasan" {{ old('target_role') == 'atasan' ? 'selected' : '' }}>Atasan</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Tahun Angkatan</label>
+                    <select name="angkatan" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:ring-[#800000] focus:border-[#800000] text-sm">
+                        <option value="">Semua Angkatan</option>
+                        @for($year = date('Y'); $year >= 2000; $year--)
+                            <option value="{{ $year }}" {{ old('angkatan') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Grup Form</label>
+                    <select name="form_group" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:ring-[#800000] focus:border-[#800000] text-sm">
+                        <option value="">Tidak ada grup</option>
+                        <option value="Tracer Study (1 Year After Yudisium)" {{ old('form_group') == 'Tracer Study (1 Year After Yudisium)' ? 'selected' : '' }}>Tracer Study (1 Year After Yudisium)</option>
+                        <option value="Exit Survey (After Yudisium)" {{ old('form_group') == 'Exit Survey (After Yudisium)' ? 'selected' : '' }}>Exit Survey (After Yudisium)</option>
+                        <option value="User Survey (After Tracer Study)" {{ old('form_group') == 'User Survey (After Tracer Study)' ? 'selected' : '' }}>User Survey (After Tracer Study)</option>
                     </select>
                 </div>
             </div>
@@ -81,7 +100,7 @@
                             </div>
                             <div class="flex items-end">
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" x-model="question.required" class="rounded border-gray-300 text-[#800000] focus:ring-[#800000]">
+                                    <input type="checkbox" x-model="question.required">
                                     <span class="text-sm text-gray-700">Wajib diisi</span>
                                 </label>
                             </div>
@@ -161,7 +180,6 @@
 function formBuilder() {
     return {
         formTitle: '',
-        targetRole: 'alumni',
         questions: [],
         nextId: 1,
 

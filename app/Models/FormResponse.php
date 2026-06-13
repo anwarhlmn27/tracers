@@ -15,6 +15,7 @@ class FormResponse extends Model
     protected $fillable = [
         'form_id',
         'user_id',
+        'evaluated_student_id',
     ];
 
     public function form(): BelongsTo
@@ -30,5 +31,10 @@ class FormResponse extends Model
     public function answers(): HasMany
     {
         return $this->hasMany(FormResponseAnswer::class, 'response_id');
+    }
+
+    public function evaluatedStudent(): BelongsTo
+    {
+        return $this->belongsTo(Student::class, 'evaluated_student_id');
     }
 }

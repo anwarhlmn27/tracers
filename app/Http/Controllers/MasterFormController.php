@@ -39,6 +39,8 @@ class MasterFormController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'target_role' => ['required', Rule::in(['alumni', 'atasan'])],
+            'angkatan' => ['nullable', 'string', 'max:50'],
+            'form_group' => ['nullable', 'string', 'max:100'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*.text' => ['required', 'string'],
             'questions.*.type' => ['required', Rule::in(['text', 'number', 'textarea', 'radio', 'select', 'checkbox'])],
@@ -51,6 +53,8 @@ class MasterFormController extends Controller
             'id' => Str::uuid(),
             'title' => $validated['title'],
             'target_role' => $validated['target_role'],
+            'angkatan' => $validated['angkatan'] ?? null,
+            'form_group' => $validated['form_group'] ?? null,
             'is_active' => true,
         ]);
 
@@ -102,6 +106,8 @@ class MasterFormController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'target_role' => ['required', Rule::in(['alumni', 'atasan'])],
+            'angkatan' => ['nullable', 'string', 'max:50'],
+            'form_group' => ['nullable', 'string', 'max:100'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*.text' => ['required', 'string'],
             'questions.*.type' => ['required', Rule::in(['text', 'number', 'textarea', 'radio', 'select', 'checkbox'])],
@@ -113,6 +119,8 @@ class MasterFormController extends Controller
         $form->update([
             'title' => $validated['title'],
             'target_role' => $validated['target_role'],
+            'angkatan' => $validated['angkatan'] ?? null,
+            'form_group' => $validated['form_group'] ?? null,
         ]);
 
         // Delete old questions (cascade deletes options too)

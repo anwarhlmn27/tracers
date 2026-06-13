@@ -4,20 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Tracer Study Dashboard')</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
+    <link href="{{ asset('assets/css/inter.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom-forms.css') }}" rel="stylesheet" />
     
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        <script src="{{ asset('assets/js/tailwindcss-browser.js') }}"></script>
     @endif
     
     <!-- AlpineJS for dropdowns -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="{{ asset('assets/js/alpine.min.js') }}"></script>
+    <!-- TomSelect -->
+    <link href="{{ asset('assets/css/tom-select.css') }}" rel="stylesheet">
+    <script src="{{ asset('assets/js/tom-select.complete.min.js') }}"></script>
+    <script src="{{ asset('assets/js/init-tomselect.js') }}"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
+        /* TomSelect Customizations */
+        .ts-control { border-radius: 0.5rem !important; border-color: #d1d5db !important; padding: 0.5rem 0.75rem !important; font-size: 0.875rem !important; background-color: #ffffff !important; }
+        .ts-control.focus { border-color: #800000 !important; box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1) !important; }
+        .ts-dropdown { border-radius: 0.5rem !important; border-color: #d1d5db !important; }
+        .ts-dropdown .option.active { background-color: #800000 !important; color: white !important; }
         .sidebar-link {
             position: relative;
             overflow: hidden;
@@ -104,9 +113,13 @@
             <!-- User info in sidebar -->
             <div class="px-5 py-4 border-b border-white/10">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center font-bold text-sm">
-                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 2)) }}
-                    </div>
+                    @if(Auth::user()->avatar)
+                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover border border-white/20">
+                    @else
+                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center font-bold text-sm">
+                            {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 2)) }}
+                        </div>
+                    @endif
                     <div class="min-w-0 flex-1">
                         <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name ?? 'User' }}</p>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mt-0.5
@@ -150,6 +163,12 @@
                     Alumni Data
                 </a>
 
+                {{-- Master Prodi: admin, dosen --}}
+                <a href="{{ route('prodi.index') }}" class="sidebar-link flex items-center px-3 py-2.5 {{ request()->routeIs('prodi.*') ? 'active bg-white/15 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }} rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('prodi.*') ? 'text-[#E6A442]' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    Master Prodi
+                </a>
+
                 {{-- Questionnaires: admin, dosen --}}
                 <a href="{{ route('questionnaires.index') }}" class="sidebar-link flex items-center px-3 py-2.5 {{ request()->routeIs('questionnaires.*') ? 'active bg-white/15 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }} rounded-lg transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('questionnaires.*') ? 'text-[#E6A442]' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -160,6 +179,12 @@
                 <a href="{{ route('reports.index') }}" class="sidebar-link flex items-center px-3 py-2.5 {{ request()->routeIs('reports.*') ? 'active bg-white/15 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }} rounded-lg transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('reports.*') ? 'text-[#E6A442]' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Reports & Analytics
+                </a>
+
+                {{-- Email Blast: admin, dosen --}}
+                <a href="{{ route('email.index') }}" class="sidebar-link flex items-center px-3 py-2.5 {{ request()->routeIs('email.*') ? 'active bg-white/15 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }} rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('email.*') ? 'text-[#E6A442]' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    Email Blast
                 </a>
 
                 <p class="px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-white/40">Pengaturan</p>
@@ -208,9 +233,13 @@
                     <!-- User Profile Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
                         <button @click="open = !open" class="flex items-center gap-3 focus:outline-none hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
-                            <div class="w-9 h-9 rounded-full bg-[#800000] text-white flex items-center justify-center font-bold text-sm">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                            </div>
+                            @if(Auth::user()->avatar)
+                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover border border-gray-200">
+                            @else
+                                <div class="w-9 h-9 rounded-full bg-[#800000] text-white flex items-center justify-center font-bold text-sm">
+                                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                                </div>
+                            @endif
                             <div class="text-sm text-left hidden sm:block">
                                 <p class="font-medium text-gray-700 leading-none">{{ Auth::user()->name ?? 'User' }}</p>
                                 <p class="text-xs mt-1">
