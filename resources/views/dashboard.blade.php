@@ -6,7 +6,7 @@
 @section('content')
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Stat Card 1 -->
-    <div class="bg-gradient-to-br from-[#800000] to-[#b30000] rounded-2xl p-6 shadow-lg shadow-red-900/20 text-white relative overflow-hidden">
+    <div class="bg-[#800000] rounded-2xl p-6 shadow-lg shadow-red-900/20 text-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
         <div class="flex items-center justify-between relative z-10">
             <div>
@@ -20,7 +20,7 @@
     </div>
     
     <!-- Stat Card 2 -->
-    <div class="bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl p-6 shadow-lg shadow-emerald-900/20 text-white relative overflow-hidden">
+    <div class="bg-emerald-600 rounded-2xl p-6 shadow-lg shadow-emerald-900/20 text-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
         <div class="flex items-center justify-between relative z-10">
             <div>
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Stat Card 3 -->
-    <div class="bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-2xl p-6 shadow-lg shadow-indigo-900/20 text-white relative overflow-hidden">
+    <div class="bg-indigo-600 rounded-2xl p-6 shadow-lg shadow-indigo-900/20 text-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
         <div class="flex items-center justify-between relative z-10">
             <div>
@@ -78,7 +78,7 @@
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold shrink-0">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-bold shrink-0">
                                 {{ strtoupper(substr($namaResponden, 0, 1)) }}
                             </div>
                             <div class="flex flex-col">

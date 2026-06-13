@@ -29,7 +29,7 @@
             top: 0;
             height: 100%;
             width: 3px;
-            background: linear-gradient(180deg, #E6A442, #F5D89A);
+            background: #E6A442;
             border-radius: 0 4px 4px 0;
             transform: scaleY(0);
             transition: transform 0.2s ease;
@@ -38,9 +38,9 @@
         .sidebar-link:hover::before {
             transform: scaleY(1);
         }
-        .role-badge-admin { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
-        .role-badge-alumni { background: linear-gradient(135deg, #059669, #34d399); }
-        .role-badge-dosen { background: linear-gradient(135deg, #d97706, #fbbf24); }
+        .role-badge-admin { background: #7c3aed; }
+        .role-badge-alumni { background: #059669; }
+        .role-badge-dosen { background: #d97706; }
     </style>
     @stack('styles')
 </head>
@@ -84,7 +84,7 @@
              style="display: none;"></div>
 
         <!-- Sidebar -->
-        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-[#800000] to-[#5a0000] text-white flex flex-col transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-auto shadow-2xl"
+        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-[#800000] text-white flex flex-col transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-auto shadow-2xl"
                :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
             <div class="h-16 flex items-center justify-between px-6 border-b border-white/10">
                 <div class="flex items-center gap-2">
@@ -95,7 +95,6 @@
                     </svg>
                     <span class="text-xl font-bold tracking-wide">Tracer Study</span>
                 </div>
-            </div>
                 <!-- Close button for mobile -->
                 <button @click="sidebarOpen = false" class="lg:hidden text-white/70 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -209,7 +208,7 @@
                     <!-- User Profile Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
                         <button @click="open = !open" class="flex items-center gap-3 focus:outline-none hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#800000] to-[#b30000] text-white flex items-center justify-center font-bold text-sm">
+                            <div class="w-9 h-9 rounded-full bg-[#800000] text-white flex items-center justify-center font-bold text-sm">
                                 {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                             </div>
                             <div class="text-sm text-left hidden sm:block">
