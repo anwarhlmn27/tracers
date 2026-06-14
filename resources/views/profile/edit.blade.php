@@ -163,7 +163,7 @@
                             <!-- Status Alumni -->
                             <div class="space-y-2">
                                 <label for="status_alumni" class="block text-sm font-semibold text-gray-700">Status Alumni</label>
-                                <select name="status_alumni" id="status_alumni" onchange="toggleProfileCompanyFields()" class="w-full rounded-2xl border-gray-200 focus:border-[#800000] focus:ring focus:ring-[#800000]/20 transition-all px-4 py-3 bg-gray-50 focus:bg-white text-sm">
+                                <select name="status_alumni" id="status_alumni" onchange="toggleProfileCompanyFields()" class="w-full rounded-2xl border-gray-200 focus:border-[#800000] focus:ring focus:ring-[#800000]/20 transition-all px-4 py-3 bg-gray-50 focus:bg-white text-sm" required>
                                     <option value="">Pilih Status Alumni</option>
                                     <option value="Bekerja (full time / part time)" {{ old('status_alumni', $user->student->status_alumni ?? '') === 'Bekerja (full time / part time)' ? 'selected' : '' }}>Bekerja (full time / part time)</option>
                                     <option value="Wiraswasta" {{ old('status_alumni', $user->student->status_alumni ?? '') === 'Wiraswasta' ? 'selected' : '' }}>Wiraswasta</option>

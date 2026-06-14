@@ -41,7 +41,7 @@ class ProfileController extends Controller
                 'nim' => ['required', 'string', 'max:20', Rule::unique('students', 'nim')->ignore($user->student->id ?? '')],
                 'prodi_id' => ['required', 'exists:prodis,id'],
                 'angkatan' => ['required', 'integer', 'min:2000', 'max:2099'],
-                'status_alumni' => ['nullable', 'string', Rule::in(['Bekerja (full time / part time)', 'Belum memungkinkan bekerja', 'Wiraswasta', 'Melanjutkan Pendidikan', 'Tidak kerja tetapi sedang mencari kerja'])],
+                'status_alumni' => ['required', 'string', Rule::in(['Bekerja (full time / part time)', 'Belum memungkinkan bekerja', 'Wiraswasta', 'Melanjutkan Pendidikan', 'Tidak kerja tetapi sedang mencari kerja'])],
                 'nama_perusahaan' => ['nullable', 'string', 'max:255'],
                 'jabatan' => ['nullable', 'string', 'max:255'],
                 'tempat_kerja' => ['nullable', 'string', Rule::in(['Lokal', 'Nasional', 'Multinasional'])],
@@ -104,6 +104,10 @@ class ProfileController extends Controller
                     'response_rate' => $validated['response_rate'] ?? null,
                 ]);
             }
+        }
+
+        if (in_array($user->role, ['alumni', 'atasan'])) {
+            return redirect()->route('form.create')->with('success', 'Profil berhasil diperbarui!');
         }
 
         return redirect()->route('profile.edit')->with('success', 'Profil berhasil diperbarui!');

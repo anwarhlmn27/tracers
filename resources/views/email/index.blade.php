@@ -312,6 +312,19 @@
 
         // Sync Quill content to hidden input before submit
         var form = document.getElementById('emailForm');
+        
+        // Prevent form submission when pressing Enter in standard inputs
+        form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const target = e.target;
+                // Allow enter in textareas, contenteditable elements, and Quill editor
+                if (target.tagName === 'TEXTAREA' || target.isContentEditable || target.closest('.ql-editor')) {
+                    return;
+                }
+                e.preventDefault();
+            }
+        });
+
         form.onsubmit = function() {
             var bodyInput = document.getElementById('bodyInput');
             // Get HTML content
