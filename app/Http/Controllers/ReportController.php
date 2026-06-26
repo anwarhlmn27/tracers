@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use App\Models\TracerResponse;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -72,7 +71,7 @@ class ReportController extends Controller
             ->whereHas('form', function($q) {
                 $q->where('is_active', true);
             })
-            ->whereIn('question_type', ['radio', 'select', 'checkbox'])
+            ->whereIn('question_type', ['radio', 'select', 'checkbox', 'linear_scale', 'rating'])
             ->get();
             
         $dynamicCharts = [];
@@ -113,6 +112,52 @@ class ReportController extends Controller
             ->orderBy('angkatan')
             ->get();
 
+        // Helper closure: query answer counts for a question by keyword
+        $answerCounts = function (string $keyword) {
+            return \App\Models\FormResponseAnswer::whereHas('question', function ($q) use ($keyword) {
+                $q->whereRaw('LOWER(question_text) LIKE ?', ['%' . strtolower($keyword) . '%']);
+            })
+            ->whereNotNull('answer_text')
+            ->where('answer_text', '!=', '')
+            ->selectRaw('answer_text, COUNT(*) as total')
+            ->groupBy('answer_text')
+            ->orderByDesc('total')
+            ->pluck('total', 'answer_text')
+            ->toArray();
+        };
+
+        // 6. Waktu Tunggu — ambil dari answer_text, kelompokkan ke bucket
+        $rawWaktuTunggu = \App\Models\FormResponseAnswer::whereHas('question', function ($q) {
+                $q->whereRaw('LOWER(question_text) LIKE ?', ['%waktu tunggu%']);
+            })
+            ->whereNotNull('answer_text')
+            ->where('answer_text', '!=', '')
+            ->pluck('answer_text');
+
+        $waktuTungguBuckets = [
+            '0 bulan' => 0, '1-3 bulan' => 0, '4-6 bulan' => 0,
+            '7-12 bulan' => 0, '> 12 bulan' => 0,
+        ];
+        foreach ($rawWaktuTunggu as $val) {
+            $num = (int) filter_var($val, FILTER_SANITIZE_NUMBER_INT);
+            if ($num <= 0)       $waktuTungguBuckets['0 bulan']++;
+            elseif ($num <= 3)   $waktuTungguBuckets['1-3 bulan']++;
+            elseif ($num <= 6)   $waktuTungguBuckets['4-6 bulan']++;
+            elseif ($num <= 12)  $waktuTungguBuckets['7-12 bulan']++;
+            else                 $waktuTungguBuckets['> 12 bulan']++;
+        }
+        $waktuTungguLabels = array_keys($waktuTungguBuckets);
+        $waktuTungguData   = array_values($waktuTungguBuckets);
+
+        // 7. Skala Tempat Kerja
+        $skalaTempat = $answerCounts('skala tempat kerja');
+
+        // 8. Distribusi Pendapatan
+        $pendapatanData = $answerCounts('pendapatan');
+
+        // 9. Kesesuaian Pekerjaan dengan Prodi
+        $kesesuaianData = $answerCounts('sesuai dengan program studi');
+
         return view('reports', compact(
             'totalStudents',
             'totalResponses',
@@ -126,6 +171,11 @@ class ReportController extends Controller
             'monthCounts',
             'dynamicCharts',
             'angkatanData',
+            'waktuTungguLabels',
+            'waktuTungguData',
+            'skalaTempat',
+            'pendapatanData',
+            'kesesuaianData',
         ));
     }
 }

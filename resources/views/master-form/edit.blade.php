@@ -86,13 +86,18 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Tipe Pertanyaan</label>
                                 <select x-model="question.type" @change="onTypeChange(qIndex)"
-                                    class="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:ring-[#800000] focus:border-[#800000] text-sm">
-                                    <option value="text">Text (Input Singkat)</option>
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:ring-[#800000] focus:border-[#800000] text-sm no-ts">
+                                    <option value="text">Short answer (Teks Singkat)</option>
+                                    <option value="textarea">Paragraph (Paragraf)</option>
+                                    <option value="radio">Multiple choice (Pilihan Ganda)</option>
+                                    <option value="checkbox">Checkboxes (Kotak Centang)</option>
+                                    <option value="select">Dropdown (Pilihan Turun)</option>
+                                    <option value="file">File upload (Unggah File)</option>
+                                    <option value="linear_scale">Linear scale (Skala Linear)</option>
+                                    <option value="rating">Rating (Bintang)</option>
+                                    <option value="date">Date (Tanggal)</option>
+                                    <option value="time">Time (Waktu)</option>
                                     <option value="number">Number (Angka)</option>
-                                    <option value="textarea">Textarea (Teks Panjang)</option>
-                                    <option value="radio">Radio (Pilih Satu)</option>
-                                    <option value="select">Select (Dropdown)</option>
-                                    <option value="checkbox">Checkbox (Pilih Banyak)</option>
                                 </select>
                             </div>
                             <div class="flex items-end">
@@ -102,6 +107,8 @@
                                 </label>
                             </div>
                         </div>
+
+                        <!-- Options (for radio/select/checkbox) -->
                         <div x-show="['radio', 'select', 'checkbox'].includes(question.type)" x-transition class="space-y-3">
                             <label class="block text-sm font-medium text-gray-700">Opsi Jawaban</label>
                             <template x-for="(option, oIndex) in question.options" :key="oIndex">
@@ -122,6 +129,57 @@
                                 Tambah Opsi
                             </button>
                         </div>
+
+                        <!-- Options for linear scale -->
+                        <div x-show="question.type === 'linear_scale'" x-transition class="space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div class="flex items-center gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Mulai Dari</label>
+                                    <select x-model="question.options[0]" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs focus:ring-[#800000] focus:border-[#800000] no-ts">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </div>
+                                <span class="text-gray-400 mt-5">sampai</span>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Hingga</label>
+                                    <select x-model="question.options[1]" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs focus:ring-[#800000] focus:border-[#800000] no-ts">
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Label Nilai Terendah (Opsional)</label>
+                                    <input type="text" x-model="question.options[2]" placeholder="Contoh: Sangat Buruk" 
+                                        class="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:ring-[#800000] focus:border-[#800000]">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Label Nilai Tertinggi (Opsional)</label>
+                                    <input type="text" x-model="question.options[3]" placeholder="Contoh: Sangat Baik" 
+                                        class="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:ring-[#800000] focus:border-[#800000]">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Options for rating -->
+                        <div x-show="question.type === 'rating'" x-transition class="space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Jumlah Bintang / Skala Rating</label>
+                                <select x-model="question.options[0]" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs focus:ring-[#800000] focus:border-[#800000] no-ts">
+                                    <option value="5">5 Bintang</option>
+                                    <option value="10">10 Bintang</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -139,7 +197,7 @@
                 <input type="hidden" :name="'questions[' + qIndex + '][text]'" :value="question.text">
                 <input type="hidden" :name="'questions[' + qIndex + '][type]'" :value="question.type">
                 <input type="hidden" :name="'questions[' + qIndex + '][required]'" :value="question.required ? 1 : 0">
-                <template x-if="['radio', 'select', 'checkbox'].includes(question.type)">
+                <template x-if="['radio', 'select', 'checkbox', 'linear_scale', 'rating'].includes(question.type)">
                     <template x-for="(opt, oIndex) in question.options" :key="'opt-' + oIndex">
                         <input type="hidden" :name="'questions[' + qIndex + '][options][' + oIndex + ']'" :value="opt">
                     </template>
@@ -181,11 +239,23 @@ function formBuilder() {
 
     return {
         formTitle: @json($form->title),
-        questions: existingQuestions.map((q, i) => ({
-            ...q,
-            id: i + 1,
-            options: q.options.length > 0 ? q.options : ['', ''],
-        })),
+        questions: existingQuestions.map((q, i) => {
+            let options = q.options;
+            if (['radio', 'select', 'checkbox'].includes(q.type)) {
+                options = q.options.length > 0 ? q.options : ['', ''];
+            } else if (q.type === 'linear_scale') {
+                options = q.options.length >= 2 ? q.options : ['1', '5', '', ''];
+            } else if (q.type === 'rating') {
+                options = q.options.length >= 1 ? q.options : ['5'];
+            } else {
+                options = [];
+            }
+            return {
+                ...q,
+                id: i + 1,
+                options: options
+            };
+        }),
         nextId: existingQuestions.length + 1,
 
         addQuestion() {
@@ -224,28 +294,45 @@ function formBuilder() {
 
         onTypeChange(qIndex) {
             const q = this.questions[qIndex];
-            if (['radio', 'select', 'checkbox'].includes(q.type) && (!q.options || q.options.length === 0)) {
-                q.options = ['', ''];
+            if (['radio', 'select', 'checkbox'].includes(q.type)) {
+                if (!q.options || q.options.length < 2 || q.options.length > 10 || q.type === 'linear_scale' || q.type === 'rating') {
+                    q.options = ['', ''];
+                }
+            } else if (q.type === 'linear_scale') {
+                q.options = ['1', '5', '', ''];
+            } else if (q.type === 'rating') {
+                q.options = ['5'];
+            } else {
+                q.options = [];
             }
         },
 
         prepareSubmit(e) {
             if (this.questions.length === 0) {
                 e.preventDefault();
-                alert('Tambahkan minimal 1 pertanyaan.');
+                Toast.fire({ icon: 'warning', title: 'Tambahkan minimal 1 pertanyaan.' });
                 return;
             }
             for (let i = 0; i < this.questions.length; i++) {
                 if (!this.questions[i].text.trim()) {
                     e.preventDefault();
-                    alert('Pertanyaan #' + (i + 1) + ' belum diisi.');
+                    Toast.fire({ icon: 'warning', title: 'Pertanyaan #' + (i + 1) + ' belum diisi.' });
                     return;
                 }
                 if (['radio', 'select', 'checkbox'].includes(this.questions[i].type)) {
                     const filledOptions = this.questions[i].options.filter(o => o.trim() !== '');
                     if (filledOptions.length < 2) {
                         e.preventDefault();
-                        alert('Pertanyaan #' + (i + 1) + ' membutuhkan minimal 2 opsi.');
+                        Toast.fire({ icon: 'warning', title: 'Pertanyaan #' + (i + 1) + ' membutuhkan minimal 2 opsi.' });
+                        return;
+                    }
+                }
+                if (this.questions[i].type === 'linear_scale') {
+                    const start = parseInt(this.questions[i].options[0]);
+                    const end = parseInt(this.questions[i].options[1]);
+                    if (isNaN(start) || isNaN(end) || start >= end) {
+                        e.preventDefault();
+                        Toast.fire({ icon: 'warning', title: 'Pertanyaan #' + (i + 1) + ': Nilai akhir skala linear harus lebih besar dari nilai awal.' });
                         return;
                     }
                 }
@@ -255,3 +342,4 @@ function formBuilder() {
 }
 </script>
 @endpush
+

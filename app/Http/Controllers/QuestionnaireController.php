@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TracerResponse;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;

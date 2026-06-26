@@ -14,28 +14,6 @@
         </div>
     @endif
     
-    @if(session('success'))
-        <div class="mb-6 rounded-2xl bg-green-50 border border-green-200 p-4 text-green-700 flex justify-between items-center shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <span class="font-medium">{{ session('success') }}</span>
-            </div>
-        </div>
-    @endif
-
-    @if(session('warning'))
-        <div class="mb-6 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-700 flex justify-between items-center shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                </div>
-                <span class="font-medium">{{ session('warning') }}</span>
-            </div>
-        </div>
-    @endif
-
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         
         <!-- Header Section -->

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void {
     Schema::create('prodis', function (Blueprint $table) {
         $table->uuid('id')->primary();
-        $table->string('nama_prodi');
         $table->string('kode_prodi')->unique();
+        $table->string('nama_prodi');
         $table->timestamps();
     });
 }

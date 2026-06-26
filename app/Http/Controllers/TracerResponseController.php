@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TracerResponse;
 use App\Models\QuestionnaireForm;
 use App\Models\FormResponse;
 use App\Models\FormResponseAnswer;
@@ -57,14 +56,6 @@ class TracerResponseController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Legacy: also get old static responses if user is alumni with student record
-        $legacyResponses = collect();
-        if ($student) {
-            $legacyResponses = TracerResponse::where('student_id', $student->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        }
-
         // Check if user has already filled the active form
         $hasFilledActiveForm = false;
         if ($activeForm) {
@@ -77,7 +68,7 @@ class TracerResponseController extends Controller
 
         $needsToSelectStudent = false;
 
-        return view('form', compact('activeForm', 'hasFilledActiveForm', 'previousResponses', 'legacyResponses', 'student', 'user', 'needsToSelectStudent', 'evaluatedStudentId'));
+        return view('form', compact('activeForm', 'hasFilledActiveForm', 'previousResponses', 'student', 'user', 'needsToSelectStudent', 'evaluatedStudentId'));
     }
 
     /**
@@ -89,7 +80,7 @@ class TracerResponseController extends Controller
 
         $validated = $request->validate([
             'form_id' => ['required', 'exists:questionnaire_forms,id'],
-            'answers' => ['required', 'array'],
+            'answers' => ['nullable', 'array'],
         ]);
 
         $form = QuestionnaireForm::with('questions')->findOrFail($validated['form_id']);
@@ -108,9 +99,15 @@ class TracerResponseController extends Controller
         // Validate required questions have answers
         foreach ($form->questions as $question) {
             if ($question->is_required) {
-                $answer = $validated['answers'][$question->id] ?? null;
-                if (empty($answer) && $answer !== '0') {
-                    return back()->withErrors(['answers.' . $question->id => 'Pertanyaan "' . $question->question_text . '" wajib diisi.'])->withInput();
+                if ($question->question_type === 'file') {
+                    if (!$request->hasFile("answers.{$question->id}")) {
+                        return back()->withErrors(['answers.' . $question->id => 'Pertanyaan "' . $question->question_text . '" wajib mengunggah file.'])->withInput();
+                    }
+                } else {
+                    $answer = $validated['answers'][$question->id] ?? null;
+                    if (empty($answer) && $answer !== '0') {
+                        return back()->withErrors(['answers.' . $question->id => 'Pertanyaan "' . $question->question_text . '" wajib diisi.'])->withInput();
+                    }
                 }
             }
         }
@@ -125,11 +122,29 @@ class TracerResponseController extends Controller
 
         // Save answers
         foreach ($form->questions as $question) {
-            $answerValue = $validated['answers'][$question->id] ?? null;
+            $answerValue = null;
 
-            // For checkbox, join multiple values
-            if ($question->question_type === 'checkbox' && is_array($answerValue)) {
-                $answerValue = implode(', ', $answerValue);
+            if ($question->question_type === 'file') {
+                if ($request->hasFile("answers.{$question->id}")) {
+                    $file = $request->file("answers.{$question->id}");
+                    $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                    
+                    // Create directory if not exists
+                    $destinationPath = public_path('uploads/questions');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    
+                    $file->move($destinationPath, $fileName);
+                    $answerValue = 'uploads/questions/' . $fileName;
+                }
+            } else {
+                $answerValue = $validated['answers'][$question->id] ?? null;
+
+                // For checkbox, join multiple values
+                if ($question->question_type === 'checkbox' && is_array($answerValue)) {
+                    $answerValue = implode(', ', $answerValue);
+                }
             }
 
             FormResponseAnswer::create([

@@ -33,7 +33,56 @@ Route::middleware('auth')->group(function () {
             $totalForms = \App\Models\QuestionnaireForm::count();
             $activeForms = \App\Models\QuestionnaireForm::where('is_active', true)->count();
 
-            return view('dashboard', compact('totalAlumni', 'responseRate', 'recentResponses', 'totalForms', 'activeForms'));
+            // Helper closure: query answer counts for a question by keyword
+            $answerCounts = function (string $keyword) {
+                return \App\Models\FormResponseAnswer::whereHas('question', function ($q) use ($keyword) {
+                    $q->whereRaw('LOWER(question_text) LIKE ?', ['%' . strtolower($keyword) . '%']);
+                })
+                ->whereNotNull('answer_text')
+                ->where('answer_text', '!=', '')
+                ->selectRaw('answer_text, COUNT(*) as total')
+                ->groupBy('answer_text')
+                ->orderByDesc('total')
+                ->pluck('total', 'answer_text')
+                ->toArray();
+            };
+
+            // Waktu Tunggu
+            $rawWaktuTunggu = \App\Models\FormResponseAnswer::whereHas('question', function ($q) {
+                    $q->whereRaw('LOWER(question_text) LIKE ?', ['%waktu tunggu%']);
+                })
+                ->whereNotNull('answer_text')
+                ->where('answer_text', '!=', '')
+                ->pluck('answer_text');
+
+            $waktuTungguBuckets = [
+                '0 bulan' => 0, '1-3 bulan' => 0, '4-6 bulan' => 0,
+                '7-12 bulan' => 0, '> 12 bulan' => 0,
+            ];
+            foreach ($rawWaktuTunggu as $val) {
+                $num = (int) filter_var($val, FILTER_SANITIZE_NUMBER_INT);
+                if ($num <= 0)       $waktuTungguBuckets['0 bulan']++;
+                elseif ($num <= 3)   $waktuTungguBuckets['1-3 bulan']++;
+                elseif ($num <= 6)   $waktuTungguBuckets['4-6 bulan']++;
+                elseif ($num <= 12)  $waktuTungguBuckets['7-12 bulan']++;
+                else                 $waktuTungguBuckets['> 12 bulan']++;
+            }
+            $waktuTungguLabels = array_keys($waktuTungguBuckets);
+            $waktuTungguData   = array_values($waktuTungguBuckets);
+
+            // Skala Tempat Kerja
+            $skalaTempat = $answerCounts('skala tempat kerja');
+
+            // Distribusi Pendapatan
+            $pendapatanData = $answerCounts('pendapatan');
+
+            // Kesesuaian Pekerjaan dengan Prodi
+            $kesesuaianData = $answerCounts('sesuai dengan program studi');
+
+            return view('dashboard', compact(
+                'totalAlumni', 'responseRate', 'recentResponses', 'totalForms', 'activeForms',
+                'waktuTungguLabels', 'waktuTungguData', 'skalaTempat', 'pendapatanData', 'kesesuaianData'
+            ));
         })->name('dashboard');
     });
 

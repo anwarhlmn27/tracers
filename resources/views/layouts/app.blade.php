@@ -20,6 +20,10 @@
     <script src="{{ asset('assets/js/tom-select.complete.min.js') }}"></script>
     <script src="{{ asset('assets/js/init-tomselect.js') }}"></script>
 
+    <!-- SweetAlert2 for Toasts -->
+    <link rel="stylesheet" href="{{ asset('assets/css/sweetalert2.min.css') }}">
+    <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; }
         /* TomSelect Customizations */
@@ -292,5 +296,32 @@
         </main>
     </div>
     @stack('scripts')
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        @if(session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session("success") }}'
+            });
+        @endif
+
+        @if(session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: '{{ session("error") }}'
+            });
+        @endif
+    </script>
 </body>
 </html>

@@ -129,35 +129,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-200 flex items-start gap-3">
-            <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <div>
-                <h3 class="font-bold">Berhasil!</h3>
-                <p class="text-sm mt-1">{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
-
-    @if(session('error') || $errors->any())
-        <div class="mb-6 bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 flex items-start gap-3">
-            <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <div>
-                <h3 class="font-bold">Terjadi Kesalahan</h3>
-                @if(session('error'))
-                    <p class="text-sm mt-1">{{ session('error') }}</p>
-                @endif
-                @if($errors->any())
-                    <ul class="list-disc pl-5 mt-2 text-sm space-y-1">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
-        </div>
-    @endif
-
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <!-- Form Header -->
         <div class="bg-gradient-to-r from-[#800000] to-[#990000] px-6 py-4 border-b border-[#600000] flex items-center gap-3">

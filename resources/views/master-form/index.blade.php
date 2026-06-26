@@ -5,13 +5,6 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
-    @if(session('success'))
-        <div class="mb-6 rounded-2xl bg-green-50 border border-green-200 p-4 text-green-700 flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>

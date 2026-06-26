@@ -36,9 +36,4 @@ class Student extends Model
     {
         return $this->belongsTo(Prodi::class);
     }
-
-    public function tracerResponse(): HasOne
-    {
-        return $this->hasOne(\App\Models\TracerResponse::class);
-    }
 }

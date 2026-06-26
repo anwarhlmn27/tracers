@@ -43,7 +43,7 @@ class MasterFormController extends Controller
             'form_group' => ['nullable', 'string', 'max:100'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*.text' => ['required', 'string'],
-            'questions.*.type' => ['required', Rule::in(['text', 'number', 'textarea', 'radio', 'select', 'checkbox'])],
+            'questions.*.type' => ['required', Rule::in(['text', 'number', 'textarea', 'radio', 'select', 'checkbox', 'file', 'linear_scale', 'rating', 'date', 'time'])],
             'questions.*.required' => ['sometimes', 'boolean'],
             'questions.*.options' => ['nullable', 'array'],
             'questions.*.options.*' => ['nullable', 'string'],
@@ -68,10 +68,10 @@ class MasterFormController extends Controller
                 'sort_order' => $index,
             ]);
 
-            // Create options for radio/select/checkbox
-            if (in_array($questionData['type'], ['radio', 'select', 'checkbox']) && !empty($questionData['options'])) {
+            // Create options for radio/select/checkbox/linear_scale/rating
+            if (in_array($questionData['type'], ['radio', 'select', 'checkbox', 'linear_scale', 'rating']) && !empty($questionData['options'])) {
                 foreach ($questionData['options'] as $optIndex => $optionText) {
-                    if (!empty(trim($optionText))) {
+                    if (isset($optionText) && $optionText !== '') {
                         FormQuestionOption::create([
                             'id' => Str::uuid(),
                             'question_id' => $question->id,
@@ -110,7 +110,7 @@ class MasterFormController extends Controller
             'form_group' => ['nullable', 'string', 'max:100'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*.text' => ['required', 'string'],
-            'questions.*.type' => ['required', Rule::in(['text', 'number', 'textarea', 'radio', 'select', 'checkbox'])],
+            'questions.*.type' => ['required', Rule::in(['text', 'number', 'textarea', 'radio', 'select', 'checkbox', 'file', 'linear_scale', 'rating', 'date', 'time'])],
             'questions.*.required' => ['sometimes', 'boolean'],
             'questions.*.options' => ['nullable', 'array'],
             'questions.*.options.*' => ['nullable', 'string'],
@@ -137,9 +137,9 @@ class MasterFormController extends Controller
                 'sort_order' => $index,
             ]);
 
-            if (in_array($questionData['type'], ['radio', 'select', 'checkbox']) && !empty($questionData['options'])) {
+            if (in_array($questionData['type'], ['radio', 'select', 'checkbox', 'linear_scale', 'rating']) && !empty($questionData['options'])) {
                 foreach ($questionData['options'] as $optIndex => $optionText) {
-                    if (!empty(trim($optionText))) {
+                    if (isset($optionText) && $optionText !== '') {
                         FormQuestionOption::create([
                             'id' => Str::uuid(),
                             'question_id' => $question->id,

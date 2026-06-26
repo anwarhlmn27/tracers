@@ -195,7 +195,15 @@
                                     <p class="text-sm text-gray-700 font-medium mb-3" x-text="item.question"></p>
                                     
                                     <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-                                        <p class="text-sm text-gray-900 whitespace-pre-wrap" x-text="item.answer"></p>
+                                        <template x-if="item.answer && item.answer.startsWith('uploads/questions/')">
+                                            <a :href="'/' + item.answer" target="_blank" class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold text-xs uppercase tracking-wide">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                                Lihat Berkas / Unduh
+                                            </a>
+                                        </template>
+                                        <template x-if="!item.answer || !item.answer.startsWith('uploads/questions/')">
+                                            <p class="text-sm text-gray-900 whitespace-pre-wrap" x-text="item.answer"></p>
+                                        </template>
                                     </div>
                                 </div>
                             </template>
